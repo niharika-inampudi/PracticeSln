@@ -17,7 +17,7 @@ namespace PracticeSln
             stdns1.StudentDetails();
             Students stdns2 = new Students("Chaitra", 5c, "KinderGarden", "Bala", 7323306686);
             stdns2.StudentDetails();
-            Students stdns3 = new Students("Niha", 6, "1st Grade", "Rama", 7323306686);
+            Students stdns3 = new Students("Niharika", 6, "1st Grade", "Rama", 7323306686);
             stdns3.StudentDetails();
         }
     }
