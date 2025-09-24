@@ -16,7 +16,7 @@ namespace PracticeSln
         static void Main(string[] args)
         {
             ReadDatafromTxt();
-            string connectionString = "Data Source=SASIDHAR;Initial Catalog=Practice;Integrated Security=True;";
+            string connectionString = "Data Source=MOVVA;Initial Catalog=Practice;Integrated Security=True;";
 
             using(var conn = new SqlConnection(connectionString))
             {
@@ -36,16 +36,9 @@ namespace PracticeSln
                         // 'dataTable' now contains the data from 'YourTableName'
                     }
                 }
+                conn.Close();
 
             }
-            //Students stdns=new Students("Nihith",2,"InterMediate","Sasidhar",7323306686);
-            //stdns.StudentDetails();
-            //Students stdns1 = new Students("Virat", 3, "InterMediate", "Bala", 7323306686);
-            //stdns1.StudentDetails();
-            //Students stdns2 = new Students("Chaitra", 5, "KinderGarden", "Bala", 7323306686);
-            //stdns2.StudentDetails();
-            //Students stdns3 = new Students("Niharika", 6, "1st Grade", "Rama", 7323306686);
-            //stdns3.StudentDetails();
         }
 
         private static void ReadDatafromTxt()
@@ -55,7 +48,7 @@ namespace PracticeSln
             try
             {
                 string[] lines = File.ReadAllLines(filePath);
-                string connectionString = "Data Source=SASIDHAR;Initial Catalog=Practice;Integrated Security=True;";
+                string connectionString = "Data Source=MOVVA;Initial Catalog=Practice;Integrated Security=True;";
 
                 using(var conn = new SqlConnection(connectionString))
                 {
@@ -71,7 +64,11 @@ namespace PracticeSln
                         command.Parameters.Add("@Program", line.Split(',')[2]);
                         command.Parameters.Add("@FatherName", line.Split(',')[3]);
                         command.Parameters.Add("@Mobile", line.Split(',')[4]);
+
+                        command.ExecuteNonQuery();
+
                     }
+                    conn.Close();
                 }
             }
             catch(IOException e)
