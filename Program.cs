@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -16,9 +17,9 @@ namespace PracticeSln
         static void Main(string[] args)
         {
             ReadDatafromTxt();
-            string connectionString = "Data Source=MOVVA;Initial Catalog=Practice;Integrated Security=True;";
+            string connectionString = ConfigurationManager.ConnectionStrings["Practice"].ConnectionString;
 
-            using(var conn = new SqlConnection(connectionString))
+            using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
                 string query = "SELECT * FROM StudentInfo;";
@@ -48,24 +49,26 @@ namespace PracticeSln
             try
             {
                 string[] lines = File.ReadAllLines(filePath);
-                string connectionString = "Data Source=MOVVA;Initial Catalog=Practice;Integrated Security=True;";
+                string connectionString = ConfigurationManager.ConnectionStrings["Practice"].ConnectionString;
 
-                using(var conn = new SqlConnection(connectionString))
+                using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
                     foreach(string line in lines)
                     {
+                        if (Isvalid(line) && !String.IsNullOrEmpty(line))
+                        {
+                            string query = "INSERT INTO StudentInfo (Name, Age,Program,FatherName,Mobile) VALUES (@Name,@Age,@Program, @FatherName,@Mobile)";
 
-                        String query = "INSERT INTO StudentInfo (Name, Age,Program,FatherName,Mobile) VALUES (@Name,@Age,@Program, @FatherName,@Mobile)";
+                            SqlCommand command = new SqlCommand(query, conn);
+                            command.Parameters.AddWithValue("@Name", line.Split(',')[0]);
+                            command.Parameters.AddWithValue("@Age", line.Split(',')[1]);
+                            command.Parameters.AddWithValue("@Program", line.Split(',')[2]);
+                            command.Parameters.AddWithValue("@FatherName", line.Split(',')[3]);
+                            command.Parameters.AddWithValue("@Mobile", line.Split(',')[4]);
 
-                        SqlCommand command = new SqlCommand(query, conn);
-                        command.Parameters.Add("@Name", line.Split(',')[0]);
-                        command.Parameters.Add("@Age", line.Split(',')[1]);
-                        command.Parameters.Add("@Program", line.Split(',')[2]);
-                        command.Parameters.Add("@FatherName", line.Split(',')[3]);
-                        command.Parameters.Add("@Mobile", line.Split(',')[4]);
-
-                        command.ExecuteNonQuery();
+                            command.ExecuteNonQuery();
+                        }
 
                     }
                     conn.Close();
@@ -75,6 +78,32 @@ namespace PracticeSln
             {
                 Console.WriteLine($"Error reading file: {e.Message}");
             }
+        }
+
+        private static bool Isvalid(string line)
+        {
+            try
+            {
+                if (line.Split(',').Length==5)
+                {
+                    int.TryParse(line.Split(',')[1], out int ageResult);
+                    long number;
+                    bool isNumerical = long.TryParse(line.Split(',')[4], out number);
+                    if ((line.Split(',')[0] is string) && ageResult > 0 && (line.Split(',')[2] is string) &&
+                        (line.Split(',')[3] is string) && isNumerical)
+                    {
+                        return true;
+                    }
+                }
+                
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return false;
         }
     }
     public class Students
